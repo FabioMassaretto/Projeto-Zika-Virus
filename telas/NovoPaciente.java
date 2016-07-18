@@ -5,10 +5,21 @@
  */
 package telas;
 
+import com.mysql.jdbc.PreparedStatement;
+import dbconnector.DBconnector;
+import static dbconnector.DBconnector.DBconnector;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
 import javax.swing.text.MaskFormatter;
-
+import validadores.ValidaCPF;
+import validadores.ValidaCampos;
 
 /**
  *
@@ -20,17 +31,21 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
      * Creates new form NovoPaciente
      */
     private static boolean podeProsseguir = false;
-    private String campoComErroCPF = "";
-    private String campoComErroNome = "";
-    private String campoComErroNraso = "";
+    private String nrCPF = "";
+    private String nrCaso = "";
+    ValidaCampos validaCampos = new ValidaCampos();
+    private Connection connection = null;
+    private PreparedStatement preparedStatement = null;
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
     
     public NovoPaciente() throws ParseException {
         initComponents();
-        MaskFormatter maskNrCaso = new MaskFormatter("###/##"); 
+        
+        MaskFormatter maskNrCaso = new MaskFormatter("###");
         maskNrCaso.install(txtNrCaso);
         
-        MaskFormatter maskCPF = new MaskFormatter("###.###.###-##"); 
-        maskCPF.install(txtCPF);
+        MaskFormatter maskCPF = new MaskFormatter("###.###.###-##");
+        maskCPF.install(txtCPF);                
     }
 
     /**
@@ -52,14 +67,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         jLabel8 = new javax.swing.JLabel();
         txtNomeCompleto = new javax.swing.JTextField();
         txtCPF = new javax.swing.JFormattedTextField();
-        dateColeta1 = new org.jdesktop.swingx.JXDatePicker();
-        dateColeta2 = new org.jdesktop.swingx.JXDatePicker();
-        dateColeta3 = new org.jdesktop.swingx.JXDatePicker();
-        dateColeta4 = new org.jdesktop.swingx.JXDatePicker();
-        dateColeta5 = new org.jdesktop.swingx.JXDatePicker();
-        txtNrCaso = new javax.swing.JFormattedTextField();
         jLabel9 = new javax.swing.JLabel();
-        dateEntrada = new org.jdesktop.swingx.JXDatePicker();
         jButton1 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
@@ -76,7 +84,22 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         cmbFinalRN = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
         lblNrCaso = new javax.swing.JLabel();
-        lblNrcasoCompleto = new javax.swing.JLabel();
+        lblCPF = new javax.swing.JLabel();
+        lblNome = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        txtNrCaso = new javax.swing.JFormattedTextField();
+        dtEntrada = new org.jdesktop.swingx.JXDatePicker();
+        dtColeta1 = new org.jdesktop.swingx.JXDatePicker();
+        dtColeta2 = new org.jdesktop.swingx.JXDatePicker();
+        dtColeta3 = new org.jdesktop.swingx.JXDatePicker();
+        dtColeta4 = new org.jdesktop.swingx.JXDatePicker();
+        dtColeta5 = new org.jdesktop.swingx.JXDatePicker();
+        lblDtEntrada = new javax.swing.JLabel();
+        lblDtCol1 = new javax.swing.JLabel();
+        lblDtCol2 = new javax.swing.JLabel();
+        lblDtCol3 = new javax.swing.JLabel();
+        lblDtCol4 = new javax.swing.JLabel();
+        lblDtCol5 = new javax.swing.JLabel();
 
         setClosable(true);
         setTitle("Novo Paciente");
@@ -115,17 +138,6 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         txtCPF.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtCPFFocusLost(evt);
-            }
-        });
-
-        txtNrCaso.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                txtNrCasoFocusLost(evt);
-            }
-        });
-        txtNrCaso.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNrCasoActionPerformed(evt);
             }
         });
 
@@ -269,9 +281,31 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 
         jTabbedPane1.addTab("Resultados", jPanel1);
 
-        lblNrCaso.setText("jLabel16");
+        lblNrCaso.setText("Nr Caso");
 
-        lblNrcasoCompleto.setText("jLabel16");
+        lblCPF.setText("CPF");
+
+        lblNome.setText("Nome");
+
+        jLabel16.setText("\\16");
+
+        txtNrCaso.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtNrCasoFocusLost(evt);
+            }
+        });
+
+        lblDtEntrada.setText("entrada");
+
+        lblDtCol1.setText("col1");
+
+        lblDtCol2.setText("col2");
+
+        lblDtCol3.setText("col3");
+
+        lblDtCol4.setText("col4");
+
+        lblDtCol5.setText("col5");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -280,89 +314,128 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane1)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtNrCaso, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(dateEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel6)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel8))
-                                .addGap(12, 12, 12)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(dateColeta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(dateColeta2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(dateColeta3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(dateColeta4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(dateColeta5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtNomeCompleto))))
-                        .addGap(87, 87, 87)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblNrcasoCompleto)
-                            .addComponent(lblNrCaso))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel1)
+                                            .addComponent(jLabel2)
+                                            .addComponent(jLabel6)
+                                            .addComponent(jLabel5)
+                                            .addComponent(jLabel4))
+                                        .addGap(12, 12, 12)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtNomeCompleto, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(lblCPF))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(dtColeta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(lblDtCol1))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(dtColeta2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(lblDtCol2))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(dtColeta3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(lblDtCol3))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtNrCaso, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel16)
+                                        .addGap(32, 32, 32)
+                                        .addComponent(lblNrCaso)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel9)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(dtEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblNome)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(lblDtEntrada)
+                                        .addGap(0, 10, Short.MAX_VALUE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel8)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(dtColeta5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblDtCol5))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel7)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(dtColeta4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblDtCol4)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(155, 155, 155)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel3)
-                            .addComponent(txtNrCaso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9)
-                            .addComponent(dateEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(txtNomeCompleto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblNrCaso)))
-                    .addComponent(lblNrcasoCompleto))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel16)
+                    .addComponent(txtNrCaso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dtEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblNrCaso)
+                    .addComponent(lblDtEntrada))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtNomeCompleto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblNome))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblCPF))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateColeta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateColeta2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateColeta3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateColeta4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel7))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(dateColeta5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel8))
+                    .addComponent(dtColeta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(lblDtCol1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(dtColeta2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(lblDtCol2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(dtColeta3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6)
+                    .addComponent(lblDtCol3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(dtColeta4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblDtCol4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(dtColeta5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblDtCol5))
+                .addGap(18, 18, 18)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -370,12 +443,121 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtNrCasoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNrCasoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNrCasoActionPerformed
-
+    public void datePickerSetup(){
+        if (dtEntrada.getDate() == null){
+            lblDtEntrada.setText("");
+        }else{
+            lblDtEntrada.setText(formatter.format(dtEntrada.getDate()));
+        }
+        if (dtColeta1.getDate() == null){
+            lblDtCol1.setText("");
+        }else{
+            lblDtCol1.setText(formatter.format(dtEntrada.getDate()));
+        }
+        if (dtColeta2.getDate() == null){
+            lblDtCol2.setText("");
+        }else{
+            lblDtCol2.setText(formatter.format(dtEntrada.getDate()));
+        }
+        if (dtColeta3.getDate() == null){
+            lblDtCol3.setText("");
+        }else{
+            lblDtCol3.setText(formatter.format(dtEntrada.getDate()));
+        }
+        if (dtColeta4.getDate() == null){
+            lblDtCol4.setText("");
+        }else{
+            lblDtCol4.setText(formatter.format(dtEntrada.getDate()));
+        }
+        if (dtColeta5.getDate() == null){
+            lblDtCol5.setText("");
+        }else{
+            lblDtCol5.setText(formatter.format(dtEntrada.getDate()));
+        }
+    }
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        datePickerSetup();
+        
+        if (!ValidaCPF.isCPF(lblCPF.getText())) {
+            JOptionPane.showMessageDialog(rootPane, "CPF inválido!");
+            podeProsseguir = false;
+        }else{ podeProsseguir = true; }
+        if (validaCampos.validaNomeCompleto(lblNome.getText())) {
+            JOptionPane.showMessageDialog(rootPane, "O campo NOME COMPLETO está em branco!");
+            podeProsseguir = false; 
+        }else{ podeProsseguir = true; }
+        try{
+            if (validaCampos.validaCampoNrCaso(Integer.parseInt(txtNrCaso.getText()))) {
+                JOptionPane.showMessageDialog(rootPane, "O campo NUMERO DO CASO está em inválido!");
+                podeProsseguir = false;
+            }else{ podeProsseguir = true; }
+        }catch (NumberFormatException nFE){
+            JOptionPane.showMessageDialog(rootPane, "O campo NUMERO DO CASO está no formato inválido! \n"
+                    + "Por favor digite no seguinte formato com tres numeros, por exemplo: 003");
+            podeProsseguir = false;
+        }
+                               
+        if (podeProsseguir) {  
+            
+                try {
+//                    DBconnector();
+                    System.out.println("-------- MySQL JDBC Connection Testing ------------");
+
+                    try {
+                            Class.forName("com.mysql.jdbc.Driver");
+                    } catch (ClassNotFoundException e) {
+                            System.out.println("Where is your MySQL JDBC Driver?");
+                            e.printStackTrace();
+                            return;
+                    }
+
+                    System.out.println("MySQL JDBC Driver Registered!");
+                    Connection connection = null;
+
+                    try {
+                            connection = DriverManager
+                            .getConnection("jdbc:mysql://localhost:3306/projetozikadb","root", "lmi56n");
+
+                    } catch (SQLException e) {
+                            System.out.println("Connection Failed! Check output console");
+                            e.printStackTrace();
+                            return;
+                    }
+
+                    if (connection != null) {
+                            System.out.println("You made it, take control your database now!");
+                    } else {
+                            System.out.println("Failed to make connection!");
+                    }
+
+                    preparedStatement = (PreparedStatement) connection.prepareStatement("INSERT INTO pacientes VALUES(default, ?, ?, ?, ?)");
+                    preparedStatement.setString(1, lblNome.getText());
+                    preparedStatement.setString(2, lblCPF.getText());
+                    preparedStatement.setString(3, lblDtEntrada.getText());
+                    preparedStatement.setString(4, txtNrCaso.getText());
+                    preparedStatement.executeUpdate();
+
+                    connection.close();
+        //            
+        //            stmt = connection.createStatement();
+        //            rs = stmt.executeQuery("INSERT INTO pacientes ");
+        //
+        //            // or alternatively, if you don't know ahead of time that
+        //            // the query will be a SELECT...
+        //
+        //            if (stmt.execute("SELECT foo FROM bar")) {
+        //                rs = stmt.getResultSet();
+        //            }
+
+                    // Now do something with the ResultSet ....
+            }catch (SQLException ex){
+                // handle any errors
+                System.out.println("SQLException: " + ex.getMessage());
+                System.out.println("SQLState: " + ex.getSQLState());
+                System.out.println("VendorError: " + ex.getErrorCode());               
+            }
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void cmbAmostra1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAmostra1ActionPerformed
@@ -401,50 +583,12 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private void cmbFinalRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFinalRNActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbFinalRNActionPerformed
-    
-    
-    private void txtNrCasoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNrCasoFocusLost
-        String nrCaso = txtNrCaso.getText();
-        
-        StringBuilder sb = new StringBuilder();
-        
-        try{
-            for (int i = 0; i < 3; i++) {
-                sb.append(nrCaso.charAt(i));
-            }
-            lblNrCaso.setText(sb.toString());
-            lblNrcasoCompleto.setText(nrCaso.replace("/", ""));
-        
-            int contaNrCaso = Integer.parseInt(sb.toString());
-        
-            if (contaNrCaso > 500 || contaNrCaso <= 0) {
-                JOptionPane.showMessageDialog(rootPane, "O numero do caso é maior que 500 ou menor ou igual a 0");
-                txtNrCaso.setText("");
-                podeProsseguir = false;
-                campoComErroNome = "Informar o numero do caso corretamente!";
-            }else if (txtNrCaso.getText().equals(null)) {
-                JOptionPane.showMessageDialog(rootPane, "O numero do caso está em branco!");
-                podeProsseguir = false;
-                campoComErroNome = "Informar o numero do caso corretamente!";
-            }else{
-                podeProsseguir = true;
-            }
-           }catch(NumberFormatException nFE){
-               JOptionPane.showMessageDialog(rootPane, "O formato do campo numero do caso, está incorreto! \n "
-                       + "O formato para o campo numero do caso é, por exemplo: 012/34");
-               podeProsseguir = false;
-               campoComErroNome = "Informar o numero do caso corretamente!";
-        }
-        
-        
-        
-    }//GEN-LAST:event_txtNrCasoFocusLost
+
 
     private void txtNomeCompletoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNomeCompletoFocusGained
         if (txtNomeCompleto.getText().equals("Informe o Nome Completo")) {
             txtNomeCompleto.setText("");
         }
-            
     }//GEN-LAST:event_txtNomeCompletoFocusGained
 
     private void txtNomeCompletoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeCompletoActionPerformed
@@ -452,24 +596,20 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtNomeCompletoActionPerformed
 
     private void txtCPFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCPFFocusLost
-        try{
-          
-        }catch(NumberFormatException nFE){
-            JOptionPane.showMessageDialog(rootPane, "O formato do campo CPF, está incorreto! \n "
-                       + "O formato para o CPF é, por exemplo: 123.456.789-01");
-        }
+        String auxCPF1 = txtCPF.getText();
+        String auxCPF2 = auxCPF1.replace(".", "");
+        String nrCPF = auxCPF2.replace("-", "");
+        
+        lblCPF.setText(nrCPF);
     }//GEN-LAST:event_txtCPFFocusLost
 
     private void txtNomeCompletoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNomeCompletoFocusLost
-        if (txtNomeCompleto.getText().equals("")) {
-            JOptionPane.showMessageDialog(rootPane, "O campo nome completo está em branco!");
-            campoComErroNome = "Informar o nome competo!";
-            podeProsseguir = false;
-        }else{
-            podeProsseguir = true;
-        }
+        lblNome.setText(txtNomeCompleto.getText());
     }//GEN-LAST:event_txtNomeCompletoFocusLost
 
+    private void txtNrCasoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNrCasoFocusLost
+        lblNrCaso.setText(txtNrCaso.getText());
+    }//GEN-LAST:event_txtNrCasoFocusLost
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cmbAmostra1;
@@ -477,12 +617,12 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> cmbAmostra3;
     private javax.swing.JComboBox<String> cmbFinalMae;
     private javax.swing.JComboBox<String> cmbFinalRN;
-    private org.jdesktop.swingx.JXDatePicker dateColeta1;
-    private org.jdesktop.swingx.JXDatePicker dateColeta2;
-    private org.jdesktop.swingx.JXDatePicker dateColeta3;
-    private org.jdesktop.swingx.JXDatePicker dateColeta4;
-    private org.jdesktop.swingx.JXDatePicker dateColeta5;
-    private org.jdesktop.swingx.JXDatePicker dateEntrada;
+    private org.jdesktop.swingx.JXDatePicker dtColeta1;
+    private org.jdesktop.swingx.JXDatePicker dtColeta2;
+    private org.jdesktop.swingx.JXDatePicker dtColeta3;
+    private org.jdesktop.swingx.JXDatePicker dtColeta4;
+    private org.jdesktop.swingx.JXDatePicker dtColeta5;
+    private org.jdesktop.swingx.JXDatePicker dtEntrada;
     private javax.swing.JButton jButton1;
     private javax.swing.JComboBox<String> jComboBox4;
     private javax.swing.JLabel jLabel1;
@@ -492,6 +632,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -502,8 +643,15 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JLabel lblCPF;
+    private javax.swing.JLabel lblDtCol1;
+    private javax.swing.JLabel lblDtCol2;
+    private javax.swing.JLabel lblDtCol3;
+    private javax.swing.JLabel lblDtCol4;
+    private javax.swing.JLabel lblDtCol5;
+    private javax.swing.JLabel lblDtEntrada;
+    private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblNrCaso;
-    private javax.swing.JLabel lblNrcasoCompleto;
     private javax.swing.JFormattedTextField txtCPF;
     private javax.swing.JTextField txtNomeCompleto;
     private javax.swing.JFormattedTextField txtNrCaso;

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import sun.plugin2.applet.context.NoopExecutionContext;
+import telas.BuscarPaciente;
 import telas.NovoPaciente;
 
 /**
@@ -43,6 +44,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         mnuItemSair = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
         mnuItemNovoPaciente = new javax.swing.JMenuItem();
+        mnuItemBuscarPaciente = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
 
@@ -81,6 +83,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
         jMenu4.add(mnuItemNovoPaciente);
+
+        mnuItemBuscarPaciente.setText("Buscar Paciente");
+        mnuItemBuscarPaciente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuItemBuscarPacienteActionPerformed(evt);
+            }
+        });
+        jMenu4.add(mnuItemBuscarPaciente);
 
         jMenuBar1.add(jMenu4);
 
@@ -123,6 +133,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_mnuItemNovoPacienteActionPerformed
+
+    private void mnuItemBuscarPacienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemBuscarPacienteActionPerformed
+        BuscarPaciente buscarPaciente;
+        buscarPaciente = new BuscarPaciente();
+        desktop.add(buscarPaciente);
+        buscarPaciente.setVisible(true);
+    }//GEN-LAST:event_mnuItemBuscarPacienteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -167,6 +184,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem mnuItemBuscarPaciente;
     private javax.swing.JMenuItem mnuItemNovoPaciente;
     private javax.swing.JMenuItem mnuItemSair;
     // End of variables declaration//GEN-END:variables
