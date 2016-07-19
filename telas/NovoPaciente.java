@@ -7,7 +7,7 @@ package telas;
 
 import com.mysql.jdbc.PreparedStatement;
 import dbconnector.DBconnector;
-import static dbconnector.DBconnector.DBconnector;
+import dbconnector.DBconnector;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -37,6 +37,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private Connection connection = null;
     private PreparedStatement preparedStatement = null;
     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+    DBconnector conexao = new DBconnector();
     
     public NovoPaciente() throws ParseException {
         initComponents();
@@ -479,10 +480,12 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         datePickerSetup();
         
-        if (!ValidaCPF.isCPF(lblCPF.getText())) {
-            JOptionPane.showMessageDialog(rootPane, "CPF inválido!");
-            podeProsseguir = false;
-        }else{ podeProsseguir = true; }
+// implementar se for obrigatorio todos os pacientes de terem CPF e retirar codigo do txtCPFFocusLost
+
+//        if (!ValidaCPF.isCPF(lblCPF.getText())) {
+//            JOptionPane.showMessageDialog(rootPane, "CPF inválido!");
+//            podeProsseguir = false;
+//        }else{ podeProsseguir = true; }
         if (validaCampos.validaNomeCompleto(lblNome.getText())) {
             JOptionPane.showMessageDialog(rootPane, "O campo NOME COMPLETO está em branco!");
             podeProsseguir = false; 
@@ -501,44 +504,45 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         if (podeProsseguir) {  
             
                 try {
-//                    DBconnector();
-                    System.out.println("-------- MySQL JDBC Connection Testing ------------");
+                    
+                    conexao.conexao();
+//                    System.out.println("-------- MySQL JDBC Connection Testing ------------");
+//
+//                    try {
+//                            Class.forName("com.mysql.jdbc.Driver");
+//                    } catch (ClassNotFoundException e) {
+//                            System.out.println("Where is your MySQL JDBC Driver?");
+//                            e.printStackTrace();
+//                            return;
+//                    }
+//
+//                    System.out.println("MySQL JDBC Driver Registered!");
+//                    Connection connection = null;
+//
+//                    try {
+//                            connection = DriverManager
+//                            .getConnection("jdbc:mysql://localhost:3306/projetozikadb","root", "lmi56n");
+//
+//                    } catch (SQLException e) {
+//                            System.out.println("Connection Failed! Check output console");
+//                            e.printStackTrace();
+//                            return;
+//                    }
+//
+//                    if (connection != null) {
+//                            System.out.println("You made it, take control your database now!");
+//                    } else {
+//                            System.out.println("Failed to make connection!");
+//                    }
 
-                    try {
-                            Class.forName("com.mysql.jdbc.Driver");
-                    } catch (ClassNotFoundException e) {
-                            System.out.println("Where is your MySQL JDBC Driver?");
-                            e.printStackTrace();
-                            return;
-                    }
-
-                    System.out.println("MySQL JDBC Driver Registered!");
-                    Connection connection = null;
-
-                    try {
-                            connection = DriverManager
-                            .getConnection("jdbc:mysql://localhost:3306/projetozikadb","root", "lmi56n");
-
-                    } catch (SQLException e) {
-                            System.out.println("Connection Failed! Check output console");
-                            e.printStackTrace();
-                            return;
-                    }
-
-                    if (connection != null) {
-                            System.out.println("You made it, take control your database now!");
-                    } else {
-                            System.out.println("Failed to make connection!");
-                    }
-
-                    preparedStatement = (PreparedStatement) connection.prepareStatement("INSERT INTO pacientes VALUES(default, ?, ?, ?, ?)");
+                    preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO pacientes VALUES(default, ?, ?, ?, ?)");
                     preparedStatement.setString(1, lblNome.getText());
                     preparedStatement.setString(2, lblCPF.getText());
                     preparedStatement.setString(3, lblDtEntrada.getText());
                     preparedStatement.setString(4, txtNrCaso.getText());
                     preparedStatement.executeUpdate();
 
-                    connection.close();
+                    conexao.connection.close();
         //            
         //            stmt = connection.createStatement();
         //            rs = stmt.executeQuery("INSERT INTO pacientes ");
@@ -598,9 +602,18 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private void txtCPFFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCPFFocusLost
         String auxCPF1 = txtCPF.getText();
         String auxCPF2 = auxCPF1.replace(".", "");
-        String nrCPF = auxCPF2.replace("-", "");
+        String auxCPF3 = auxCPF2.replace("-", "");
+        String nrCPF = auxCPF3.replace(" ", "");
         
         lblCPF.setText(nrCPF);
+
+        if (!nrCPF.equals("")) {
+            if (!ValidaCPF.isCPF(lblCPF.getText())) {
+                JOptionPane.showMessageDialog(rootPane, "CPF inválido!");
+                podeProsseguir = false;
+            }
+            
+        }
     }//GEN-LAST:event_txtCPFFocusLost
 
     private void txtNomeCompletoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNomeCompletoFocusLost
