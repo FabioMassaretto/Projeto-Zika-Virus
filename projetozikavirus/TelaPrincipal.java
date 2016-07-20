@@ -15,6 +15,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import sun.plugin2.applet.context.NoopExecutionContext;
 import telas.BuscarPaciente;
+import telas.EditarPaciente;
 import telas.NovoPaciente;
 
 /**
@@ -45,6 +46,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu4 = new javax.swing.JMenu();
         mnuItemNovoPaciente = new javax.swing.JMenuItem();
         mnuItemBuscarPaciente = new javax.swing.JMenuItem();
+        mnuItemEditarPaciente = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
 
@@ -92,6 +94,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         jMenu4.add(mnuItemBuscarPaciente);
 
+        mnuItemEditarPaciente.setText("Editar Paciente");
+        mnuItemEditarPaciente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuItemEditarPacienteActionPerformed(evt);
+            }
+        });
+        jMenu4.add(mnuItemEditarPaciente);
+
         jMenuBar1.add(jMenu4);
 
         jMenu2.setText("Sobre");
@@ -128,18 +138,42 @@ public class TelaPrincipal extends javax.swing.JFrame {
             novoPaciente = new NovoPaciente();
             desktop.add(novoPaciente);
             novoPaciente.setVisible(true);
-        } catch (ParseException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error Message: " + ex.getMessage());
+            System.out.println("Cause: " + ex.getCause());
+            System.out.println("Stack Trace: " + ex.getStackTrace());
         }
         
     }//GEN-LAST:event_mnuItemNovoPacienteActionPerformed
 
     private void mnuItemBuscarPacienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemBuscarPacienteActionPerformed
         BuscarPaciente buscarPaciente;
-        buscarPaciente = new BuscarPaciente();
-        desktop.add(buscarPaciente);
-        buscarPaciente.setVisible(true);
+        try{            
+            buscarPaciente = new BuscarPaciente();
+            desktop.add(buscarPaciente);
+            buscarPaciente.setVisible(true);
+        } catch (Exception ex) {
+            Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error Message: " + ex.getMessage());
+            System.out.println("Cause: " + ex.getCause());
+            System.out.println("Stack Trace: " + ex.getStackTrace());
+        }
     }//GEN-LAST:event_mnuItemBuscarPacienteActionPerformed
+
+    private void mnuItemEditarPacienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemEditarPacienteActionPerformed
+        EditarPaciente editarPaciente;
+        try {
+            editarPaciente = new EditarPaciente();
+            desktop.add(editarPaciente);
+            editarPaciente.setVisible(true);
+        } catch (Exception ex) {
+            Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error Message: " + ex.getMessage());
+            System.out.println("Cause: " + ex.getCause());
+            System.out.println("Stack Trace: " + ex.getStackTrace());
+        }
+    }//GEN-LAST:event_mnuItemEditarPacienteActionPerformed
 
     /**
      * @param args the command line arguments
@@ -185,6 +219,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem mnuItemBuscarPaciente;
+    private javax.swing.JMenuItem mnuItemEditarPaciente;
     private javax.swing.JMenuItem mnuItemNovoPaciente;
     private javax.swing.JMenuItem mnuItemSair;
     // End of variables declaration//GEN-END:variables
