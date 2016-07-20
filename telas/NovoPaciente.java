@@ -7,13 +7,10 @@ package telas;
 
 import com.mysql.jdbc.PreparedStatement;
 import dbconnector.DBconnector;
-import dbconnector.DBconnector;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
@@ -33,11 +30,14 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private static boolean podeProsseguir = false;
     private String nrCPF = "";
     private String nrCaso = "";
-    ValidaCampos validaCampos = new ValidaCampos();
+    private ResultSet resultSet = null;
+    private Statement statement = null;
     private Connection connection = null;
     private PreparedStatement preparedStatement = null;
-    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+    
+    ValidaCampos validaCampos = new ValidaCampos();
     DBconnector conexao = new DBconnector();
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");    
     
     public NovoPaciente() throws ParseException {
         initComponents();
@@ -58,6 +58,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel17 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -78,12 +79,32 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         jLabel11 = new javax.swing.JLabel();
         cmbAmostra3 = new javax.swing.JComboBox<>();
         jLabel12 = new javax.swing.JLabel();
-        jComboBox4 = new javax.swing.JComboBox<>();
+        cmbAmostra4 = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
         cmbFinalMae = new javax.swing.JComboBox<>();
         jLabel14 = new javax.swing.JLabel();
         cmbFinalRN = new javax.swing.JComboBox<>();
         jLabel15 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
+        jLabel27 = new javax.swing.JLabel();
+        txtSoro = new javax.swing.JTextField();
+        txtPlasma = new javax.swing.JTextField();
+        txtSaliva = new javax.swing.JTextField();
+        txtSemen = new javax.swing.JTextField();
+        txtLeiteMaterno = new javax.swing.JTextField();
+        txtUrina = new javax.swing.JTextField();
+        txtLiquor = new javax.swing.JTextField();
+        txtPlacenta = new javax.swing.JTextField();
+        txtCordaoUmbilical = new javax.swing.JTextField();
         lblNrCaso = new javax.swing.JLabel();
         lblCPF = new javax.swing.JLabel();
         lblNome = new javax.swing.JLabel();
@@ -101,6 +122,8 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         lblDtCol3 = new javax.swing.JLabel();
         lblDtCol4 = new javax.swing.JLabel();
         lblDtCol5 = new javax.swing.JLabel();
+
+        jLabel17.setText("jLabel17");
 
         setClosable(true);
         setTitle("Novo Paciente");
@@ -122,6 +145,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         jLabel8.setText("Data da 5ª Coleta:");
 
         txtNomeCompleto.setText("Informe o Nome Completo");
+        txtNomeCompleto.setNextFocusableComponent(txtCPF);
         txtNomeCompleto.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 txtNomeCompletoFocusGained(evt);
@@ -136,6 +160,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
             }
         });
 
+        txtCPF.setNextFocusableComponent(dtColeta1);
         txtCPF.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtCPFFocusLost(evt);
@@ -184,12 +209,12 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 
         jLabel12.setText("3ª Amostra:");
 
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "Negativo", "Positivo" }));
-        jComboBox4.setMinimumSize(new java.awt.Dimension(90, 22));
-        jComboBox4.setName(""); // NOI18N
-        jComboBox4.addActionListener(new java.awt.event.ActionListener() {
+        cmbAmostra4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "", "Negativo", "Positivo" }));
+        cmbAmostra4.setMinimumSize(new java.awt.Dimension(90, 22));
+        cmbAmostra4.setName(""); // NOI18N
+        cmbAmostra4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBox4ActionPerformed(evt);
+                cmbAmostra4ActionPerformed(evt);
             }
         });
 
@@ -237,7 +262,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel13)
-                    .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbAmostra4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel14)
@@ -264,7 +289,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel13)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cmbAmostra4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -282,6 +307,112 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 
         jTabbedPane1.addTab("Resultados", jPanel1);
 
+        jLabel18.setText("Informar a quantidade total das seguites amostras:");
+
+        jLabel19.setText("Soro:");
+
+        jLabel20.setText("Plasma:");
+
+        jLabel21.setText("Saliva:");
+
+        jLabel22.setText("Urina:");
+
+        jLabel23.setText("Sêmen:");
+
+        jLabel24.setText("Leite Materno:");
+
+        jLabel25.setText("Liquor:");
+
+        jLabel26.setText("Placenta:");
+
+        jLabel27.setText("Cordão Umbilical:");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel20)
+                                .addComponent(jLabel19, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel21)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(txtPlasma, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(50, 50, 50))
+                                    .addComponent(txtSoro, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(111, 111, 111)
+                                .addComponent(jLabel22))
+                            .addComponent(jLabel23)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(txtSaliva, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(113, 113, 113)
+                                .addComponent(jLabel24)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtLeiteMaterno, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtSemen, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtUrina, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 121, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel27, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel26, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel25, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addComponent(jLabel18))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtCordaoUmbilical, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtPlacenta, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtLiquor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(77, 77, 77))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(txtLiquor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPlacenta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtCordaoUmbilical, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel19)
+                            .addComponent(jLabel22)
+                            .addComponent(jLabel25)
+                            .addComponent(txtSoro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtUrina, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel20)
+                            .addComponent(jLabel23)
+                            .addComponent(jLabel26)
+                            .addComponent(txtPlasma, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtSemen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel24)
+                            .addComponent(jLabel27)
+                            .addComponent(txtSaliva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtLeiteMaterno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(0, 21, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Amostras", jPanel2);
+
         lblNrCaso.setText("Nr Caso");
 
         lblCPF.setText("CPF");
@@ -290,11 +421,14 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 
         jLabel16.setText("\\16");
 
+        txtNrCaso.setNextFocusableComponent(dtEntrada);
         txtNrCaso.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtNrCasoFocusLost(evt);
             }
         });
+
+        dtEntrada.setNextFocusableComponent(txtNomeCompleto);
 
         lblDtEntrada.setText("entrada");
 
@@ -363,28 +497,21 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                                         .addComponent(dtEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblNome)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lblDtEntrada)
-                                        .addGap(0, 10, Short.MAX_VALUE))))
+                                    .addComponent(lblNome)
+                                    .addComponent(lblDtEntrada)))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(dtColeta5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(lblDtCol5))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel7)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(dtColeta4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(lblDtCol4)))
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addGap(155, 155, 155)))
+                                .addComponent(jLabel8)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(dtColeta5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblDtCol5))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(dtColeta4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(lblDtCol4)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -435,8 +562,8 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                     .addComponent(dtColeta5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblDtCol5))
                 .addGap(18, 18, 18)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
@@ -453,28 +580,55 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         if (dtColeta1.getDate() == null){
             lblDtCol1.setText("");
         }else{
-            lblDtCol1.setText(formatter.format(dtEntrada.getDate()));
+            lblDtCol1.setText(formatter.format(dtColeta1.getDate()));
         }
         if (dtColeta2.getDate() == null){
             lblDtCol2.setText("");
         }else{
-            lblDtCol2.setText(formatter.format(dtEntrada.getDate()));
+            lblDtCol2.setText(formatter.format(dtColeta2.getDate()));
         }
         if (dtColeta3.getDate() == null){
             lblDtCol3.setText("");
         }else{
-            lblDtCol3.setText(formatter.format(dtEntrada.getDate()));
+            lblDtCol3.setText(formatter.format(dtColeta3.getDate()));
         }
         if (dtColeta4.getDate() == null){
             lblDtCol4.setText("");
         }else{
-            lblDtCol4.setText(formatter.format(dtEntrada.getDate()));
+            lblDtCol4.setText(formatter.format(dtColeta4.getDate()));
         }
         if (dtColeta5.getDate() == null){
             lblDtCol5.setText("");
         }else{
-            lblDtCol5.setText(formatter.format(dtEntrada.getDate()));
+            lblDtCol5.setText(formatter.format(dtColeta5.getDate()));
         }
+    }
+    
+    private void apagarCampos(){
+        txtNrCaso.setText("");
+        dtEntrada.setDate(null);
+        txtNomeCompleto.setText("");
+        txtCPF.setText("");
+        dtColeta1.setDate(null);
+        dtColeta2.setDate(null);
+        dtColeta3.setDate(null);
+        dtColeta4.setDate(null);
+        dtColeta5.setDate(null);
+        cmbAmostra1.setSelectedIndex(0);
+        cmbAmostra2.setSelectedIndex(0);
+        cmbAmostra3.setSelectedIndex(0);
+        cmbAmostra4.setSelectedIndex(0);
+        cmbFinalMae.setSelectedIndex(0);
+        cmbFinalRN.setSelectedIndex(0);
+        txtCordaoUmbilical.setText("");
+        txtLeiteMaterno.setText("");
+        txtLiquor.setText("");
+        txtPlacenta.setText("");
+        txtPlasma.setText("");
+        txtSaliva.setText("");
+        txtSemen.setText("");
+        txtSoro.setText("");
+        txtUrina.setText("");
     }
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -534,14 +688,64 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 //                    } else {
 //                            System.out.println("Failed to make connection!");
 //                    }
+                    //parte que insere dados do paciente na tabela pacientes
+                    
+                    
+                    
+                    statement = conexao.connection.createStatement();
+                    preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("SELECT NomeCompleto, NumeroCaso FROM pacientes WHERE NomeCompleto = '" + txtNomeCompleto.getText()+ "' or NumeroCaso = '"+ txtNrCaso.getText() +"'");
+                    
+                    resultSet = preparedStatement.executeQuery();
+                    String nomeCompleto = "";
+                    String numeroCaso = "";
+                    boolean empty = true;
+                    while( resultSet.next() ) {
+                        // ResultSet processing here
+                        nomeCompleto = resultSet.getString("NomeCompleto");
+                        numeroCaso = resultSet.getString("NumeroCaso");
+                        System.out.println("Caso: " + numeroCaso + "Nome: " + nomeCompleto);
+                        if (nomeCompleto.equals(txtNomeCompleto.getText())) {
+                            JOptionPane.showMessageDialog(rootPane, "Paciente: " + txtNomeCompleto.getText() + ", já está cadastrado!");
+                        }
+                        if (numeroCaso.equals(txtNrCaso.getText())) {
+                            JOptionPane.showMessageDialog(rootPane, "Numero Caso: " + txtNrCaso.getText() + ", já está cadastrado!");
+                        }
+                        
+                        empty = false;
+                    }
 
-                    preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO pacientes VALUES(default, ?, ?, ?, ?)");
-                    preparedStatement.setString(1, lblNome.getText());
-                    preparedStatement.setString(2, lblCPF.getText());
-                    preparedStatement.setString(3, lblDtEntrada.getText());
-                    preparedStatement.setString(4, txtNrCaso.getText());
-                    preparedStatement.executeUpdate();
-
+                    if( empty ) {
+                        // Empty result set
+                        preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO pacientes VALUES(default, ?, ?, ?, ?)");
+                        preparedStatement.setString(1, lblNome.getText());
+                        preparedStatement.setString(2, lblCPF.getText());
+                        preparedStatement.setString(3, lblDtEntrada.getText());
+                        preparedStatement.setString(4, txtNrCaso.getText());
+                        preparedStatement.executeUpdate();
+                        
+                        //parte que insere os resultados do paciente na tabela resultados
+                        preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO resultados VALUES(default,(SELECT ID_Paciente FROM pacientes WHERE NomeCompleto = '"+ txtNomeCompleto.getText() +"'), ?, ?, ?, ?, ?, ?)");
+                        preparedStatement.setString(1, cmbAmostra1.getSelectedItem().toString());
+                        preparedStatement.setString(2, cmbAmostra2.getSelectedItem().toString());
+                        preparedStatement.setString(3, cmbAmostra3.getSelectedItem().toString());
+                        preparedStatement.setString(4, cmbAmostra4.getSelectedItem().toString());
+                        preparedStatement.setString(5, cmbFinalMae.getSelectedItem().toString());
+                        preparedStatement.setString(6, cmbFinalRN.getSelectedItem().toString());
+                        preparedStatement.executeUpdate();
+                        
+                        //parte que insere as datas das coletas na tabela coletas
+                        preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO coletas VALUES(default,(SELECT ID_Paciente FROM pacientes WHERE NomeCompleto = '"+ txtNomeCompleto.getText() +"'), ?, ?, ?, ?, ?)");
+                        preparedStatement.setString(1, lblDtCol1.getText());
+                        preparedStatement.setString(2, lblDtCol2.getText());
+                        preparedStatement.setString(3, lblDtCol3.getText());
+                        preparedStatement.setString(4, lblDtCol4.getText());
+                        preparedStatement.setString(5, lblDtCol5.getText());
+                        preparedStatement.executeUpdate();
+                        JOptionPane.showMessageDialog(rootPane, "Paciente: " + txtNomeCompleto.getText() + ", cadastrado com sucesso!");
+                        apagarCampos();
+                        preparedStatement.close();
+                    }                    
+                    
                     conexao.connection.close();
         //            
         //            stmt = connection.createStatement();
@@ -559,34 +763,10 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                 // handle any errors
                 System.out.println("SQLException: " + ex.getMessage());
                 System.out.println("SQLState: " + ex.getSQLState());
-                System.out.println("VendorError: " + ex.getErrorCode());               
+                System.out.println("VendorError: " + ex.getErrorCode());
             }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void cmbAmostra1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAmostra1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbAmostra1ActionPerformed
-
-    private void cmbAmostra2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAmostra2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbAmostra2ActionPerformed
-
-    private void cmbAmostra3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAmostra3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbAmostra3ActionPerformed
-
-    private void jComboBox4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox4ActionPerformed
-
-    private void cmbFinalMaeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFinalMaeActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbFinalMaeActionPerformed
-
-    private void cmbFinalRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFinalRNActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbFinalRNActionPerformed
 
 
     private void txtNomeCompletoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNomeCompletoFocusGained
@@ -624,10 +804,35 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         lblNrCaso.setText(txtNrCaso.getText());
     }//GEN-LAST:event_txtNrCasoFocusLost
 
+    private void cmbFinalRNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFinalRNActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbFinalRNActionPerformed
+
+    private void cmbFinalMaeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbFinalMaeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbFinalMaeActionPerformed
+
+    private void cmbAmostra4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAmostra4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbAmostra4ActionPerformed
+
+    private void cmbAmostra3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAmostra3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbAmostra3ActionPerformed
+
+    private void cmbAmostra2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAmostra2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbAmostra2ActionPerformed
+
+    private void cmbAmostra1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbAmostra1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbAmostra1ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cmbAmostra1;
     private javax.swing.JComboBox<String> cmbAmostra2;
     private javax.swing.JComboBox<String> cmbAmostra3;
+    private javax.swing.JComboBox<String> cmbAmostra4;
     private javax.swing.JComboBox<String> cmbFinalMae;
     private javax.swing.JComboBox<String> cmbFinalRN;
     private org.jdesktop.swingx.JXDatePicker dtColeta1;
@@ -637,7 +842,6 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private org.jdesktop.swingx.JXDatePicker dtColeta5;
     private org.jdesktop.swingx.JXDatePicker dtEntrada;
     private javax.swing.JButton jButton1;
-    private javax.swing.JComboBox<String> jComboBox4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -646,7 +850,18 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
+    private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -655,6 +870,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblCPF;
     private javax.swing.JLabel lblDtCol1;
@@ -666,7 +882,16 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblNrCaso;
     private javax.swing.JFormattedTextField txtCPF;
+    private javax.swing.JTextField txtCordaoUmbilical;
+    private javax.swing.JTextField txtLeiteMaterno;
+    private javax.swing.JTextField txtLiquor;
     private javax.swing.JTextField txtNomeCompleto;
     private javax.swing.JFormattedTextField txtNrCaso;
+    private javax.swing.JTextField txtPlacenta;
+    private javax.swing.JTextField txtPlasma;
+    private javax.swing.JTextField txtSaliva;
+    private javax.swing.JTextField txtSemen;
+    private javax.swing.JTextField txtSoro;
+    private javax.swing.JTextField txtUrina;
     // End of variables declaration//GEN-END:variables
 }

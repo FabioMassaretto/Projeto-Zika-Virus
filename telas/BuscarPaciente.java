@@ -7,21 +7,15 @@ package telas;
 
 import com.mysql.jdbc.PreparedStatement;
 import dbconnector.DBconnector;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -30,7 +24,7 @@ import javax.swing.table.TableRowSorter;
 public class BuscarPaciente extends javax.swing.JInternalFrame {
 
     DefaultTableModel dtm = new DefaultTableModel(0, 0);
-    private String colunas[] = new String[]{
+    private final String colunas[] = new String[]{
         "ID", "Numero Caso", "Nome Completo", "CPF", "Data de Entrada", "Resultado 1ª Amotra", "Resultado 2ª Amotra", "Resultado 3ª Amotra", "Resultado 4ª Amotra", "Resultado Final Mãe", "Resultado Final RN", "Data 1ª Coleta", "Data 2ª Coleta", "Data 3ª Coleta", "Data 4ª Coleta", "Data 5ª Coleta"
     };
 
@@ -91,6 +85,7 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
         setClosable(true);
         setMaximizable(true);
         setResizable(true);
+        setTitle("Buscar Paciente");
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -181,13 +176,30 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void resultQuery() throws SQLException{
+        //resultado da tabela pacientes
         String id = resultSet.getString("ID_Paciente");
         String nrCaso = resultSet.getString("NumeroCaso");
         String nomeComp = resultSet.getString("NomeCompleto");
         String cpf = resultSet.getString("CPF");
         String dataEntrada = resultSet.getString("DataEntrada");
+        
+        //resultado da tabela resultados
+        String resultadoA1 = resultSet.getString("ResultadoAmostra1");
+        String resultadoA2 = resultSet.getString("ResultadoAmostra2");
+        String resultadoA3 = resultSet.getString("ResultadoAmostra3");
+        String resultadoA4 = resultSet.getString("ResultadoAmostra4");
+        String resultadoFM = resultSet.getString("ResultadoFinalMAE");
+        String resultadoRN = resultSet.getString("ResultadoFinalRN");
+        
+        //resultado da tabela coletas
+        String coleta1 = resultSet.getString("DataPrimeiraC");
+        String coleta2 = resultSet.getString("DataSegundaC");
+        String coleta3 = resultSet.getString("DataTerceiraC");
+        String coleta4 = resultSet.getString("DataQuartaC");
+        String coleta5 = resultSet.getString("DataQuintaC");
+        
 
-        dtm.addRow(new Object[]{id, nrCaso, nomeComp, cpf, dataEntrada});
+        dtm.addRow(new Object[]{id, nrCaso, nomeComp, cpf, dataEntrada, resultadoA1, resultadoA2, resultadoA3, resultadoA4, resultadoFM, resultadoRN, coleta1, coleta2, coleta3, coleta4, coleta5});
     }
     
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
@@ -224,7 +236,8 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
 //                }
             conexao.conexao();
             statement = conexao.connection.createStatement();
-            preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("SELECT * from pacientes");
+//            preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("SELECT * from pacientes");
+            preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("SELECT * FROM pacientes p INNER JOIN resultados r ON r.ID_Paciente = p.ID_Paciente INNER JOIN coletas c ON c.ID_Paciente = p.ID_Paciente");
             resultSet = preparedStatement.executeQuery();
             dtm.setColumnIdentifiers(colunas);
             tbl.setModel(dtm);
@@ -304,8 +317,9 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
                 // fire the execute statement.
                 conexao.conexao();
 
-//     String sql = "SELECT * FROM pacientes WHERE CONCAT (ID_Paciente, NumeroCaso, NomeCompleto, CPF) LIKE '%" + txtProcura.getText() + "%'";     
-                String sql = "SELECT * FROM pacientes WHERE ID_Paciente LIKE '%" + txtProcura.getText() + "%' or NumeroCaso LIKE '%" + txtProcura.getText()
+//                String sql = "SELECT * FROM pacientes p INNER JOIN resultados r ON r.ID_Paciente = p.ID_Paciente WHERE NumeroCaso LIKE '%" + txtProcura.getText()
+//                        + "%' or NomeCompleto LIKE '%" + txtProcura.getText() + "%' or CPF LIKE '%" + txtProcura.getText() + "%'";
+                String sql = "SELECT * FROM pacientes p INNER JOIN resultados r ON r.ID_Paciente = p.ID_Paciente INNER JOIN coletas c ON c.ID_Paciente = p.ID_Paciente WHERE NumeroCaso LIKE '%" + txtProcura.getText()
                         + "%' or NomeCompleto LIKE '%" + txtProcura.getText() + "%' or CPF LIKE '%" + txtProcura.getText() + "%'";
                 statement = conexao.connection.createStatement();
                 preparedStatement = (PreparedStatement) conexao.connection.prepareStatement(sql);
