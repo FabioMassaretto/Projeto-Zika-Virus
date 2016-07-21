@@ -6,18 +6,25 @@
 package telas;
 
 import com.mysql.jdbc.PreparedStatement;
+import components.DocumentSizeFilter;
 import dbconnector.DBconnector;
+import java.awt.Component;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.MaskFormatter;
+import projetozikavirus.TelaPrincipal;
 import validadores.ValidaCPF;
 import validadores.ValidaCampos;
-
 /**
  *
  * @author Fabio
@@ -34,10 +41,13 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private Statement statement = null;
     private Connection connection = null;
     private PreparedStatement preparedStatement = null;
+    private DefaultStyledDocument doc;
     
     ValidaCampos validaCampos = new ValidaCampos();
     DBconnector conexao = new DBconnector();
-    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");    
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
+    JDesktopPane desktop = super.getDesktopPane();
+    BuscarPaciente buscarPaciente = new BuscarPaciente();
     
     public NovoPaciente() throws ParseException {
         initComponents();
@@ -46,7 +56,9 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         maskNrCaso.install(txtNrCaso);
         
         MaskFormatter maskCPF = new MaskFormatter("###.###.###-##");
-        maskCPF.install(txtCPF);                
+        maskCPF.install(txtCPF);
+        
+        contPalavras();
     }
 
     /**
@@ -70,7 +82,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         txtNomeCompleto = new javax.swing.JTextField();
         txtCPF = new javax.swing.JFormattedTextField();
         jLabel9 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnCriar = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel10 = new javax.swing.JLabel();
@@ -105,6 +117,10 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         txtLiquor = new javax.swing.JTextField();
         txtPlacenta = new javax.swing.JTextField();
         txtCordaoUmbilical = new javax.swing.JTextField();
+        jPanel3 = new javax.swing.JPanel();
+        lblContPalavras = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        txtAreaObs = new javax.swing.JTextPane();
         lblNrCaso = new javax.swing.JLabel();
         lblCPF = new javax.swing.JLabel();
         lblNome = new javax.swing.JLabel();
@@ -127,6 +143,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setTitle("Novo Paciente");
+        setPreferredSize(new java.awt.Dimension(780, 560));
 
         jLabel1.setText("Nome Completo:");
 
@@ -169,10 +186,10 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 
         jLabel9.setText("Data da Entrada: ");
 
-        jButton1.setText("Criar Paciente");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnCriar.setText("Criar Paciente");
+        btnCriar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnCriarActionPerformed(evt);
             }
         });
 
@@ -327,6 +344,108 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 
         jLabel27.setText("Cordão Umbilical:");
 
+        txtSoro.setText("0");
+        txtSoro.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtSoroFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtSoroFocusLost(evt);
+            }
+        });
+        txtSoro.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                txtSoroMouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                txtSoroMouseExited(evt);
+            }
+        });
+
+        txtPlasma.setText("0");
+        txtPlasma.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtPlasmaFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtPlasmaFocusLost(evt);
+            }
+        });
+
+        txtSaliva.setText("0");
+        txtSaliva.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtSalivaFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtSalivaFocusLost(evt);
+            }
+        });
+
+        txtSemen.setText("0");
+        txtSemen.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtSemenFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtSemenFocusLost(evt);
+            }
+        });
+
+        txtLeiteMaterno.setText("0");
+        txtLeiteMaterno.setToolTipText("");
+        txtLeiteMaterno.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtLeiteMaternoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtLeiteMaternoFocusLost(evt);
+            }
+        });
+
+        txtUrina.setText("0");
+        txtUrina.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtUrinaFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtUrinaFocusLost(evt);
+            }
+        });
+
+        txtLiquor.setText("0");
+        txtLiquor.setToolTipText("");
+        txtLiquor.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtLiquorFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtLiquorFocusLost(evt);
+            }
+        });
+
+        txtPlacenta.setText("0");
+        txtPlacenta.setToolTipText("");
+        txtPlacenta.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtPlacentaFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtPlacentaFocusLost(evt);
+            }
+        });
+
+        txtCordaoUmbilical.setText("0");
+        txtCordaoUmbilical.setToolTipText("");
+        txtCordaoUmbilical.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                txtCordaoUmbilicalFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtCordaoUmbilicalFocusLost(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -343,37 +462,37 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                                 .addGap(10, 10, 10)
                                 .addComponent(jLabel21)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addComponent(txtPlasma, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(50, 50, 50))
+                                .addComponent(txtSoro, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtSaliva, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 101, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addComponent(txtPlasma, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(50, 50, 50))
-                                    .addComponent(txtSoro, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(111, 111, 111)
-                                .addComponent(jLabel22))
+                            .addComponent(jLabel22)
                             .addComponent(jLabel23)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(txtSaliva, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(113, 113, 113)
-                                .addComponent(jLabel24)))
+                            .addComponent(jLabel24))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtLeiteMaterno, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtSemen, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtUrina, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 121, Short.MAX_VALUE)
+                        .addGap(136, 136, 136)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel27, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel26, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel25, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addComponent(jLabel18))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtCordaoUmbilical, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtPlacenta, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtLiquor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(77, 77, 77))
+                            .addComponent(jLabel25, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtCordaoUmbilical, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPlacenta, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtLiquor, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel18)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -386,32 +505,57 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtCordaoUmbilical, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel25)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel26)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel27))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel18)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel19)
                             .addComponent(jLabel22)
-                            .addComponent(jLabel25)
                             .addComponent(txtSoro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtUrina, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel20)
                             .addComponent(jLabel23)
-                            .addComponent(jLabel26)
                             .addComponent(txtPlasma, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtSemen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel21)
                             .addComponent(jLabel24)
-                            .addComponent(jLabel27)
                             .addComponent(txtSaliva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtLeiteMaterno, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(0, 21, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Amostras", jPanel2);
+
+        jScrollPane2.setViewportView(txtAreaObs);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(0, 591, Short.MAX_VALUE)
+                .addComponent(lblContPalavras, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(6, 6, 6)
+                .addComponent(lblContPalavras)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Obeservações", jPanel3);
 
         lblNrCaso.setText("Nr Caso");
 
@@ -449,56 +593,12 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1)
-                                            .addComponent(jLabel2)
-                                            .addComponent(jLabel6)
-                                            .addComponent(jLabel5)
-                                            .addComponent(jLabel4))
-                                        .addGap(12, 12, 12)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtNomeCompleto, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(lblCPF))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(dtColeta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(lblDtCol1))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(dtColeta2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(lblDtCol2))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(dtColeta3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(lblDtCol3))))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txtNrCaso, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel16)
-                                        .addGap(32, 32, 32)
-                                        .addComponent(lblNrCaso)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel9)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(dtEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lblNome)
-                                    .addComponent(lblDtEntrada)))
+                            .addComponent(jTabbedPane1)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(btnCriar))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -511,8 +611,52 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                                 .addComponent(dtColeta4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(lblDtCol4)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtNrCaso, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel16)
+                                .addGap(32, 32, 32)
+                                .addComponent(lblNrCaso)
+                                .addGap(24, 24, 24)
+                                .addComponent(jLabel9)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(dtEntrada, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(lblNome)
+                                    .addComponent(lblDtEntrada)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2)
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel4))
+                                .addGap(12, 12, 12)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtNomeCompleto, javax.swing.GroupLayout.PREFERRED_SIZE, 362, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblCPF))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(dtColeta1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblDtCol1))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(dtColeta2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblDtCol2))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(dtColeta3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(lblDtCol3))))
+                            .addComponent(jLabel6))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -563,14 +707,32 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                     .addComponent(lblDtCol5))
                 .addGap(18, 18, 18)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addComponent(btnCriar)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void contPalavras(){
+        doc = new DefaultStyledDocument();
+        doc.setDocumentFilter(new DocumentSizeFilter(500));
+            doc.addDocumentListener(new DocumentListener(){
+                @Override
+                public void changedUpdate(DocumentEvent e) { updateCount();}
+                @Override
+                public void insertUpdate(DocumentEvent e) { updateCount();}
+                @Override
+                public void removeUpdate(DocumentEvent e) { updateCount();}          
+            });
+            txtAreaObs.setDocument(doc);
+            updateCount();
+    }
+    private void updateCount() {
+           lblContPalavras.setText(((500) -doc.getLength()) + " letras restando!");                      
+    }
+    
     public void datePickerSetup(){
         if (dtEntrada.getDate() == null){
             lblDtEntrada.setText("");
@@ -620,20 +782,21 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         cmbAmostra4.setSelectedIndex(0);
         cmbFinalMae.setSelectedIndex(0);
         cmbFinalRN.setSelectedIndex(0);
-        txtCordaoUmbilical.setText("");
-        txtLeiteMaterno.setText("");
-        txtLiquor.setText("");
-        txtPlacenta.setText("");
-        txtPlasma.setText("");
-        txtSaliva.setText("");
-        txtSemen.setText("");
-        txtSoro.setText("");
-        txtUrina.setText("");
+        txtCordaoUmbilical.setText("0");
+        txtLeiteMaterno.setText("0");
+        txtLiquor.setText("0");
+        txtPlacenta.setText("0");
+        txtPlasma.setText("0");
+        txtSaliva.setText("0");
+        txtSemen.setText("0");
+        txtSoro.setText("0");
+        txtUrina.setText("0");
+        txtAreaObs.setText("0");
     }
     
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCriarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriarActionPerformed
         datePickerSetup();
-        
+
 // implementar se for obrigatorio todos os pacientes de terem CPF e retirar codigo do txtCPFFocusLost
 
 //        if (!ValidaCPF.isCPF(lblCPF.getText())) {
@@ -688,17 +851,16 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
 //                    } else {
 //                            System.out.println("Failed to make connection!");
 //                    }
-                    //parte que insere dados do paciente na tabela pacientes
-                    
-                    
-                    
+
+                             
                     statement = conexao.connection.createStatement();
-                    preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("SELECT NomeCompleto, NumeroCaso FROM pacientes WHERE NomeCompleto = '" + txtNomeCompleto.getText()+ "' or NumeroCaso = '"+ txtNrCaso.getText() +"'");
-                    
+                    preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("SELECT NomeCompleto, NumeroCaso FROM pacientes WHERE NomeCompleto = '" + txtNomeCompleto.getText()+ "' or NumeroCaso = '"+ txtNrCaso.getText() +"'");                    
                     resultSet = preparedStatement.executeQuery();
+                    
                     String nomeCompleto = "";
                     String numeroCaso = "";
                     boolean empty = true;
+                    
                     while( resultSet.next() ) {
                         // ResultSet processing here
                         nomeCompleto = resultSet.getString("NomeCompleto");
@@ -715,12 +877,13 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                     }
 
                     if( empty ) {
-                        // Empty result set
-                        preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO pacientes VALUES(default, ?, ?, ?, ?)");
+                        //parte que insere dados do paciente na tabela pacientes
+                        preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO pacientes VALUES(default, ?, ?, ?, ?, ?)");
                         preparedStatement.setString(1, lblNome.getText());
                         preparedStatement.setString(2, lblCPF.getText());
                         preparedStatement.setString(3, lblDtEntrada.getText());
                         preparedStatement.setString(4, txtNrCaso.getText());
+                        preparedStatement.setString(5, txtAreaObs.getText());
                         preparedStatement.executeUpdate();
                         
                         //parte que insere os resultados do paciente na tabela resultados
@@ -733,6 +896,19 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                         preparedStatement.setString(6, cmbFinalRN.getSelectedItem().toString());
                         preparedStatement.executeUpdate();
                         
+                        //parte que insere os resultados do paciente na tabela resultados
+                        preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO amostras VALUES(default,(SELECT ID_Paciente FROM pacientes WHERE NomeCompleto = '"+ txtNomeCompleto.getText() +"'), ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                        preparedStatement.setString(1, txtSoro.getText());
+                        preparedStatement.setString(2, txtPlasma.getText());
+                        preparedStatement.setString(3, txtSaliva.getText());
+                        preparedStatement.setString(4, txtUrina.getText());
+                        preparedStatement.setString(5, txtSemen.getText());
+                        preparedStatement.setString(6, txtLiquor.getText());
+                        preparedStatement.setString(7, txtLeiteMaterno.getText());
+                        preparedStatement.setString(8, txtPlacenta.getText());
+                        preparedStatement.setString(9, txtCordaoUmbilical.getText());
+                        preparedStatement.executeUpdate();
+                        
                         //parte que insere as datas das coletas na tabela coletas
                         preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("INSERT INTO coletas VALUES(default,(SELECT ID_Paciente FROM pacientes WHERE NomeCompleto = '"+ txtNomeCompleto.getText() +"'), ?, ?, ?, ?, ?)");
                         preparedStatement.setString(1, lblDtCol1.getText());
@@ -742,23 +918,12 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                         preparedStatement.setString(5, lblDtCol5.getText());
                         preparedStatement.executeUpdate();
                         JOptionPane.showMessageDialog(rootPane, "Paciente: " + txtNomeCompleto.getText() + ", cadastrado com sucesso!");
-                        apagarCampos();
+                        apagarCampos();                                                
+                        
                         preparedStatement.close();
                     }                    
                     
                     conexao.connection.close();
-        //            
-        //            stmt = connection.createStatement();
-        //            rs = stmt.executeQuery("INSERT INTO pacientes ");
-        //
-        //            // or alternatively, if you don't know ahead of time that
-        //            // the query will be a SELECT...
-        //
-        //            if (stmt.execute("SELECT foo FROM bar")) {
-        //                rs = stmt.getResultSet();
-        //            }
-
-                    // Now do something with the ResultSet ....
             }catch (SQLException ex){
                 // handle any errors
                 System.out.println("SQLException: " + ex.getMessage());
@@ -766,7 +931,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
                 System.out.println("VendorError: " + ex.getErrorCode());
             }
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnCriarActionPerformed
 
 
     private void txtNomeCompletoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNomeCompletoFocusGained
@@ -828,7 +993,224 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbAmostra1ActionPerformed
 
+    private void txtSoroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtSoroMouseClicked
+        
+    }//GEN-LAST:event_txtSoroMouseClicked
+
+    private void txtSoroMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtSoroMouseExited
+        
+    }//GEN-LAST:event_txtSoroMouseExited
+
+    private void txtSoroFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoroFocusLost
+        for (int i = 0; i < txtSoro.getText().length(); i++) {
+            char aux = txtSoro.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtSoro.select(i, i+1);
+                txtSoro.replaceSelection("");
+            }
+        }
+        
+        if (txtSoro.getText().equals("") || txtSoro.getText().equals(" ")) {
+            txtSoro.setText("0");
+        }
+    }//GEN-LAST:event_txtSoroFocusLost
+
+    private void txtSoroFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSoroFocusGained
+        if (txtSoro.getText().equals("0") || txtSoro.getText().equals(" ")) {
+            txtSoro.setText("");
+        }
+        
+    }//GEN-LAST:event_txtSoroFocusGained
+
+    private void txtPlasmaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPlasmaFocusLost
+        for (int i = 0; i < txtPlasma.getText().length(); i++) {
+            char aux = txtPlasma.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtPlasma.select(i, i+1);
+                txtPlasma.replaceSelection("");
+            }
+        }
+        
+        if (txtPlasma.getText().equals("") || txtPlasma.getText().equals(" ")) {
+            txtPlasma.setText("0");
+        }
+    }//GEN-LAST:event_txtPlasmaFocusLost
+
+    private void txtSalivaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSalivaFocusLost
+        for (int i = 0; i < txtSaliva.getText().length(); i++) {
+            char aux = txtSaliva.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtSaliva.select(i, i+1);
+                txtSaliva.replaceSelection("");
+            }
+        }
+        
+        if (txtSaliva.getText().equals("") || txtSaliva.getText().equals(" ")) {
+            txtSaliva.setText("0");
+        }
+    }//GEN-LAST:event_txtSalivaFocusLost
+
+    private void txtUrinaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtUrinaFocusLost
+        for (int i = 0; i < txtUrina.getText().length(); i++) {
+            char aux = txtUrina.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtUrina.select(i, i+1);
+                txtUrina.replaceSelection("");
+            }
+        }
+        
+        if (txtUrina.getText().equals("") || txtUrina.getText().equals(" ")) {
+            txtUrina.setText("0");
+        }
+    }//GEN-LAST:event_txtUrinaFocusLost
+
+    private void txtSemenFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSemenFocusLost
+        for (int i = 0; i < txtSemen.getText().length(); i++) {
+            char aux = txtSemen.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtSemen.select(i, i+1);
+                txtSemen.replaceSelection("");
+            }
+        }
+        
+        if (txtSemen.getText().equals("") || txtSemen.getText().equals(" ")) {
+            txtSemen.setText("0");
+        }
+    }//GEN-LAST:event_txtSemenFocusLost
+
+    private void txtLeiteMaternoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLeiteMaternoFocusLost
+        for (int i = 0; i < txtLeiteMaterno.getText().length(); i++) {
+            char aux = txtLeiteMaterno.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtLeiteMaterno.select(i, i+1);
+                txtLeiteMaterno.replaceSelection("");
+            }
+        }
+        
+        if (txtLeiteMaterno.getText().equals("") || txtLeiteMaterno.getText().equals(" ")) {
+            txtLeiteMaterno.setText("0");
+        }
+    }//GEN-LAST:event_txtLeiteMaternoFocusLost
+
+    private void txtLiquorFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLiquorFocusLost
+        for (int i = 0; i < txtLiquor.getText().length(); i++) {
+            char aux = txtLiquor.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtLiquor.select(i, i+1);
+                txtLiquor.replaceSelection("");
+            }
+        }
+        
+        if (txtLiquor.getText().equals("") || txtLiquor.getText().equals(" ")) {
+            txtLiquor.setText("0");
+        }
+    }//GEN-LAST:event_txtLiquorFocusLost
+
+    private void txtPlacentaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPlacentaFocusLost
+        for (int i = 0; i < txtPlacenta.getText().length(); i++) {
+            char aux = txtPlacenta.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtPlacenta.select(i, i+1);
+                txtPlacenta.replaceSelection("");
+            }
+        }
+        
+        if (txtPlacenta.getText().equals("") || txtPlacenta.getText().equals(" ")) {
+            txtPlacenta.setText("0");
+        }
+    }//GEN-LAST:event_txtPlacentaFocusLost
+
+    private void txtCordaoUmbilicalFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCordaoUmbilicalFocusLost
+       for (int i = 0; i < txtCordaoUmbilical.getText().length(); i++) {
+            char aux = txtCordaoUmbilical.getText().charAt(i);
+            if (aux == '0' || aux == '1' || aux == '2' || aux == '3' || aux == '4' || aux == '5' || aux == '6' || aux == '7' || aux == '8' || aux == '9') {
+                
+            }else{
+                JOptionPane.showMessageDialog(rootPane, "Somente numeros!");
+                txtCordaoUmbilical.select(i, i+1);
+                txtCordaoUmbilical.replaceSelection("");
+            }
+        }
+        
+        if (txtCordaoUmbilical.getText().equals("") || txtCordaoUmbilical.getText().equals(" ")) {
+            txtCordaoUmbilical.setText("0");
+        }
+    }//GEN-LAST:event_txtCordaoUmbilicalFocusLost
+
+    private void txtPlasmaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPlasmaFocusGained
+        if (txtPlasma.getText().equals("0") || txtPlasma.getText().equals(" ")) {
+            txtPlasma.setText("");
+        }
+    }//GEN-LAST:event_txtPlasmaFocusGained
+
+    private void txtSalivaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSalivaFocusGained
+        if (txtSaliva.getText().equals("0") || txtSaliva.getText().equals(" ")) {
+            txtSaliva.setText("");
+        }
+    }//GEN-LAST:event_txtSalivaFocusGained
+
+    private void txtUrinaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtUrinaFocusGained
+        if (txtUrina.getText().equals("0") || txtUrina.getText().equals(" ")) {
+            txtUrina.setText("");
+        }
+    }//GEN-LAST:event_txtUrinaFocusGained
+
+    private void txtSemenFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtSemenFocusGained
+        if (txtSemen.getText().equals("0") || txtSemen.getText().equals(" ")) {
+            txtSemen.setText("");
+        }
+    }//GEN-LAST:event_txtSemenFocusGained
+
+    private void txtLeiteMaternoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLeiteMaternoFocusGained
+        if (txtLeiteMaterno.getText().equals("0") || txtLeiteMaterno.getText().equals(" ")) {
+            txtLeiteMaterno.setText("");
+        }
+    }//GEN-LAST:event_txtLeiteMaternoFocusGained
+
+    private void txtLiquorFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtLiquorFocusGained
+        if (txtLiquor.getText().equals("0") || txtLiquor.getText().equals(" ")) {
+            txtLiquor.setText("");
+        }
+    }//GEN-LAST:event_txtLiquorFocusGained
+
+    private void txtPlacentaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPlacentaFocusGained
+        if (txtPlacenta.getText().equals("0") || txtPlacenta.getText().equals(" ")) {
+            txtPlacenta.setText("");
+        }
+    }//GEN-LAST:event_txtPlacentaFocusGained
+
+    private void txtCordaoUmbilicalFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtCordaoUmbilicalFocusGained
+        if (txtCordaoUmbilical.getText().equals("0") || txtCordaoUmbilical.getText().equals(" ")) {
+            txtCordaoUmbilical.setText("");
+        }
+    }//GEN-LAST:event_txtCordaoUmbilicalFocusGained
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCriar;
     private javax.swing.JComboBox<String> cmbAmostra1;
     private javax.swing.JComboBox<String> cmbAmostra2;
     private javax.swing.JComboBox<String> cmbAmostra3;
@@ -841,7 +1223,6 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private org.jdesktop.swingx.JXDatePicker dtColeta4;
     private org.jdesktop.swingx.JXDatePicker dtColeta5;
     private org.jdesktop.swingx.JXDatePicker dtEntrada;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -871,8 +1252,11 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblCPF;
+    private javax.swing.JLabel lblContPalavras;
     private javax.swing.JLabel lblDtCol1;
     private javax.swing.JLabel lblDtCol2;
     private javax.swing.JLabel lblDtCol3;
@@ -881,6 +1265,7 @@ public class NovoPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblDtEntrada;
     private javax.swing.JLabel lblNome;
     private javax.swing.JLabel lblNrCaso;
+    private javax.swing.JTextPane txtAreaObs;
     private javax.swing.JFormattedTextField txtCPF;
     private javax.swing.JTextField txtCordaoUmbilical;
     private javax.swing.JTextField txtLeiteMaterno;

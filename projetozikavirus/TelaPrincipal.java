@@ -5,17 +5,10 @@
  */
 package projetozikavirus;
 
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import sun.plugin2.applet.context.NoopExecutionContext;
+import telas.AlterarAmostras;
 import telas.BuscarPaciente;
-import telas.EditarPaciente;
 import telas.NovoPaciente;
 
 /**
@@ -49,6 +42,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         mnuItemEditarPaciente = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
+        jMenu5 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(1028, 760));
@@ -111,6 +106,23 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
+        jMenu5.setText("jMenu5");
+        jMenu5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenu5ActionPerformed(evt);
+            }
+        });
+
+        jMenuItem1.setText("jMenuItem1");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu5.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu5);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -136,6 +148,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         NovoPaciente novoPaciente;
         try {
             novoPaciente = new NovoPaciente();
+            novoPaciente.setLocation((desktop.getWidth()/2) - (novoPaciente.getWidth()/2), (desktop.getHeight()/2) - (novoPaciente.getHeight()/2));
             desktop.add(novoPaciente);
             novoPaciente.setVisible(true);
         } catch (Exception ex) {
@@ -151,6 +164,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         BuscarPaciente buscarPaciente;
         try{            
             buscarPaciente = new BuscarPaciente();
+            buscarPaciente.setLocation((desktop.getWidth()/2) - (buscarPaciente.getWidth()/2), (desktop.getHeight()/2) - (buscarPaciente.getHeight()/2));
             desktop.add(buscarPaciente);
             buscarPaciente.setVisible(true);
         } catch (Exception ex) {
@@ -162,11 +176,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuItemBuscarPacienteActionPerformed
 
     private void mnuItemEditarPacienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuItemEditarPacienteActionPerformed
-        EditarPaciente editarPaciente;
-        try {
-            editarPaciente = new EditarPaciente();
-            desktop.add(editarPaciente);
-            editarPaciente.setVisible(true);
+        BuscarPaciente buscarPaciente;
+        try{            
+            buscarPaciente = new BuscarPaciente();
+            buscarPaciente.setLocation((desktop.getWidth()/2) - (buscarPaciente.getWidth()/2), (desktop.getHeight()/2) - (buscarPaciente.getHeight()/2));
+            desktop.add(buscarPaciente);
+            buscarPaciente.setVisible(true);
+            buscarPaciente.setName("TelaBuscar");
         } catch (Exception ex) {
             Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Error Message: " + ex.getMessage());
@@ -174,6 +190,25 @@ public class TelaPrincipal extends javax.swing.JFrame {
             System.out.println("Stack Trace: " + ex.getStackTrace());
         }
     }//GEN-LAST:event_mnuItemEditarPacienteActionPerformed
+
+    private void jMenu5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu5ActionPerformed
+        
+    }//GEN-LAST:event_jMenu5ActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        AlterarAmostras alterarAmostras;
+        try{            
+            alterarAmostras = new AlterarAmostras();
+            alterarAmostras.setLocation((desktop.getWidth()/2) - (alterarAmostras.getWidth()/2), (desktop.getHeight()/2) - (alterarAmostras.getHeight()/2));
+            desktop.add(alterarAmostras);
+            alterarAmostras.setVisible(true);
+        } catch (Exception ex) {
+            Logger.getLogger(TelaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Error Message: " + ex.getMessage());
+            System.out.println("Cause: " + ex.getCause());
+            System.out.println("Stack Trace: " + ex.getStackTrace());
+        }// TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -217,7 +252,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem mnuItemBuscarPaciente;
     private javax.swing.JMenuItem mnuItemEditarPaciente;
     private javax.swing.JMenuItem mnuItemNovoPaciente;

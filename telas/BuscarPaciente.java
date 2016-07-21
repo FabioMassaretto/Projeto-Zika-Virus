@@ -10,12 +10,15 @@ import dbconnector.DBconnector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDesktopPane;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 /**
  *
@@ -25,15 +28,16 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
 
     DefaultTableModel dtm = new DefaultTableModel(0, 0);
     private final String colunas[] = new String[]{
-        "ID", "Numero Caso", "Nome Completo", "CPF", "Data de Entrada", "Resultado 1ª Amotra", "Resultado 2ª Amotra", "Resultado 3ª Amotra", "Resultado 4ª Amotra", "Resultado Final Mãe", "Resultado Final RN", "Data 1ª Coleta", "Data 2ª Coleta", "Data 3ª Coleta", "Data 4ª Coleta", "Data 5ª Coleta"
+        "ID", "Numero Caso", "Nome Completo", "CPF", "Data de Entrada", "Resultado 1ª Amotra", "Resultado 2ª Amotra", "Resultado 3ª Amotra", "Resultado 4ª Amotra", "Resultado Final Mãe", "Resultado Final RN", "Data 1ª Coleta", "Data 2ª Coleta", "Data 3ª Coleta", "Data 4ª Coleta", "Data 5ª Coleta", "Observações"
     };
 
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
     private Statement statement = null;
-    private String selectedID = null;
+    private static String selectedID = null;
     private String selectedNome = null;
     private String selectedCPF = null;
+    int countFrame = 0;
     DBconnector conexao = new DBconnector();
 
     public String getSelectedID() {
@@ -51,20 +55,10 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
     /**
      * Creates new form buscarPaciente
      */
-    public BuscarPaciente() {
+    public BuscarPaciente() { 
+        super("Buscar Paciente",true,false,false,true);  
         initComponents();
-//        tbl.setModel(dtm);
-//        tbl.setModel(new javax.swing.table.DefaultTableModel(
-//                new Object [][] {
-//
-//                }, 
-//                new String [] {
-//                "ID", "Numero Caso", "Nome Completo", "CPF", "Data de Entrada", "Resultado 1ª Amotra", "Resultado 2ª Amotra", "Resultado 3ª Amotra", "Resultado 4ª Amotra", "Resultado Final Mãe", "Resultado Final RN", "Data 1ª Coleta", "Data 2ª Coleta", "Data 3ª Coleta", "Data 4ª Coleta", "Data 5ª Coleta"
-//                }
-//        ));
-//        tbl.paintImmediately(0, 0, 200, 300);
-//        tbl.setRowHeight(0, 2);
-
+        conexao.conexao();
     }
 
     /**
@@ -182,6 +176,7 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
         String nomeComp = resultSet.getString("NomeCompleto");
         String cpf = resultSet.getString("CPF");
         String dataEntrada = resultSet.getString("DataEntrada");
+        String observacoes = resultSet.getString("Observacoes");
         
         //resultado da tabela resultados
         String resultadoA1 = resultSet.getString("ResultadoAmostra1");
@@ -198,66 +193,46 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
         String coleta4 = resultSet.getString("DataQuartaC");
         String coleta5 = resultSet.getString("DataQuintaC");
         
+        String temObservasoes = "";
+        if (observacoes != null && !observacoes.equals("")) {
+               temObservasoes = "Sim";
+        }
+        
 
-        dtm.addRow(new Object[]{id, nrCaso, nomeComp, cpf, dataEntrada, resultadoA1, resultadoA2, resultadoA3, resultadoA4, resultadoFM, resultadoRN, coleta1, coleta2, coleta3, coleta4, coleta5});
+        dtm.addRow(new Object[]{id, nrCaso, nomeComp, cpf, dataEntrada, resultadoA1, resultadoA2, resultadoA3, resultadoA4, resultadoFM, resultadoRN, coleta1, coleta2, coleta3, coleta4, coleta5 , temObservasoes});
     }
     
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         try {
-
-//                    System.out.println("-------- MySQL JDBC Connection Testing ------------");
-//
-//                try {
-//                        Class.forName("com.mysql.jdbc.Driver");
-//                } catch (ClassNotFoundException e) {
-//                        System.out.println("Where is your MySQL JDBC Driver?");
-//                        e.printStackTrace();
-//                        return;
-//                }
-//
-//                System.out.println("MySQL JDBC Driver Registered!");
-//                Connection connection = null;
-//                
-//
-//                try {
-//                        connection = DriverManager
-//                        .getConnection("jdbc:mysql://localhost:3306/projetozikadb","root", "lmi56n");
-//
-//                } catch (SQLException e) {
-//                        System.out.println("Connection Failed! Check output console");
-//                        e.printStackTrace();
-//                        return;
-//                }
-//
-//                if (connection != null) {
-//                        System.out.println("You made it, take control your database now!");
-//                } else {
-//                        System.out.println("Failed to make connection!");
-//                }
-            conexao.conexao();
-            statement = conexao.connection.createStatement();
 //            preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("SELECT * from pacientes");
             preparedStatement = (PreparedStatement) conexao.connection.prepareStatement("SELECT * FROM pacientes p INNER JOIN resultados r ON r.ID_Paciente = p.ID_Paciente INNER JOIN coletas c ON c.ID_Paciente = p.ID_Paciente");
             resultSet = preparedStatement.executeQuery();
             dtm.setColumnIdentifiers(colunas);
-            tbl.setModel(dtm);
-
+            tbl.setModel(dtm);                
+            
             while (resultSet.next()) {
                 resultQuery();
             }
+            
+            TableColumnModel tcm = tbl.getColumnModel();
+            tcm.getColumn(0).setPreferredWidth(30);     
+            tcm.getColumn(1).setPreferredWidth(30);    
+            tcm.getColumn(2).setPreferredWidth(200);   
+            tcm.getColumn(3).setPreferredWidth(80); 
+            tcm.getColumn(4).setPreferredWidth(50);    
+            tcm.getColumn(5).setPreferredWidth(50);   
+            tcm.getColumn(6).setPreferredWidth(50);  
+            tcm.getColumn(7).setPreferredWidth(50); 
+            tcm.getColumn(8).setPreferredWidth(50);    
+            tcm.getColumn(9).setPreferredWidth(50);    
+            tcm.getColumn(10).setPreferredWidth(50);    
+            tcm.getColumn(11).setPreferredWidth(50); 
+            tcm.getColumn(12).setPreferredWidth(50);     
+            tcm.getColumn(13).setPreferredWidth(50);    
+            tcm.getColumn(14).setPreferredWidth(50);    
+            tcm.getColumn(15).setPreferredWidth(50);
+            
             conexao.connection.close();
-            //            
-            //            stmt = connection.createStatement();
-            //            rs = stmt.executeQuery("INSERT INTO pacientes ");
-            //
-            //            // or alternatively, if you don't know ahead of time that
-            //            // the query will be a SELECT...
-            //
-            //            if (stmt.execute("SELECT foo FROM bar")) {
-            //                rs = stmt.getResultSet();
-            //            }
-
-            // Now do something with the ResultSet ....
         } catch (SQLException ex) {
             // handle any errors
             System.out.println("SQLException: " + ex.getMessage());
@@ -284,6 +259,22 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
             System.out.println("Selected: " + selectedID);
             System.out.println("Selected: " + selectedNome);
             System.out.println("Selected: " + selectedCPF);
+            
+            try {
+                EditarPaciente editarPaciente = new EditarPaciente();
+//                TelaPrincipal telaPrincipal = TelaPrincipal();
+//                telaPrincipal.add(editarPaciente);
+//                editarPaciente.show();
+                
+                JDesktopPane desktop = super.getDesktopPane();
+                editarPaciente.setLocation((desktop.getWidth()/2) - (editarPaciente.getWidth()/2), (desktop.getHeight()/2) - (editarPaciente.getHeight()/2));
+                desktop.add(editarPaciente);
+                editarPaciente.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(BuscarPaciente.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(BuscarPaciente.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -321,7 +312,7 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
 //                        + "%' or NomeCompleto LIKE '%" + txtProcura.getText() + "%' or CPF LIKE '%" + txtProcura.getText() + "%'";
                 String sql = "SELECT * FROM pacientes p INNER JOIN resultados r ON r.ID_Paciente = p.ID_Paciente INNER JOIN coletas c ON c.ID_Paciente = p.ID_Paciente WHERE NumeroCaso LIKE '%" + txtProcura.getText()
                         + "%' or NomeCompleto LIKE '%" + txtProcura.getText() + "%' or CPF LIKE '%" + txtProcura.getText() + "%'";
-                statement = conexao.connection.createStatement();
+//                statement = conexao.connection.createStatement();
                 preparedStatement = (PreparedStatement) conexao.connection.prepareStatement(sql);
                 resultSet = preparedStatement.executeQuery();
 
@@ -349,4 +340,5 @@ public class BuscarPaciente extends javax.swing.JInternalFrame {
     private javax.swing.JTable tbl;
     private org.jdesktop.swingx.JXSearchField txtProcura;
     // End of variables declaration//GEN-END:variables
+
 }
